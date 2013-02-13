@@ -450,7 +450,11 @@ __halt_compiler(); ?>
           // navbar collapse
           $('.navbar-inner a').on('click', function() {
             if (!$(this).data('target') && !$(this).data('toggle')) {
-              $($('a[data-toggle="collapse"]').data('target')).collapse('hide')
+              var $link = $('a[data-toggle="collapse"]')
+                , $target = $($link.data('target'));
+              if ($target.hasClass('in')) {
+                $link.trigger('click');
+              }
             }
           });
 				})
