@@ -447,6 +447,12 @@ __halt_compiler(); ?>
 						$('.nav li').removeClass('active');
 						$(this).parent('li').addClass('active');
 					});
+          // navbar collapse
+          $('.navbar-inner a').on('click', function() {
+            if (!$(this).data('target')) {
+              $($('a[data-toggle="collapse"]').data('target')).collapse('hide')
+            }
+          });
 				})
 			}(jQuery, this);
 		//]]></script>
