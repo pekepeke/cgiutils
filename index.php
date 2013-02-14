@@ -154,6 +154,7 @@ function action_index() {
 	set(compact('sql', 'binds', 'result'));
 }
 
+
 function run() {
 	$action = params("action");
 	is_null($action) && $action = "index";
@@ -223,6 +224,7 @@ __halt_compiler(); ?>
 		<script src="js/difflib/difflib.js"></script>
 		<script src="js/difflib/diffview.js"></script>
 		<script src="js/imagediff.min.js"></script>
+		<script src="js/vkbeautify.js"></script>
 
 		<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
 		<!--[if lt IE 9]>
@@ -333,15 +335,22 @@ __halt_compiler(); ?>
 			!function($, Global) {
 				$(function() {
 					// index
-					$(document).on('keypress', '.sql-binder input,.sql-binder textarea', function(ev) {
+					$(document).on('keypress', '.sql-binder-enter-submit', function(ev) {
 						if (ev.which == 13) {
 							$(this).parents('form').submit();
 							return false;
 						}
 					});
+					$(document).on('pjax:success', function(ev) {
+						var $that = $('#sqlbinder-result');
+						if ($that.length <= 0 || !$that.val()) return;
+						var sql = vkbeautify.sql($that.val());
+						$that.val(sql);
+						$that.focus();
+					}).trigger('pjax:success');
+
 					// diff
 					$(document).on('click', '#btn-exec-diff', function(ev) {
-
 						var base = difflib.stringAsLines($("#param-base").val())
 							, newtxt = difflib.stringAsLines($("#param-new").val())
 							, sm = new difflib.SequenceMatcher(base, newtxt)
@@ -401,19 +410,23 @@ __halt_compiler(); ?>
 
 						var difference = (function(a, b) {
 							return function() {
-								$(a).hide(); $(b).hide();
 								if (!a.complete || !b.complete) {
 									setTimeout(difference, 10);
 								} else {
 									// Once they are ready, create a diff. This returns an ImageData object.
 									setTimeout(function() {
+										// prepare
 										$(a).show(); $(b).show();
 										$(out).children().remove()
+
+										// diff
 										diff = imagediff.diff(a, b);
 										canvas = imagediff.createCanvas(diff.width, diff.height); // Now create a canvas,
 										context = canvas.getContext('2d'); // get its context
 										context.putImageData(diff, 0, 0); // and finally draw the ImageData diff.
 										out.appendChild(canvas); // Add the canvas element to the container.
+
+										// for visibility
 										canvas.setAttribute('class', 'span11');
 										$(a).hide(); $(b).hide();
 									}, 10);
@@ -432,10 +445,40 @@ __halt_compiler(); ?>
 										'max-width' : '9999px'
 									});
 							}
-							return $target.attr('src', src).show().get(0);
+							return $target.attr('src', src).hide().get(0);
 						}
 					});
+					// json format
+					$(document).on('click', '#json-format-exec', function() {
+						var //is_unescaped_unicode = $('#json-unescaped-unicode').is(':checked')
+							$result = $('#json-result')
+							, json;
 
+						try {
+							json = JSON.parse($('#json-data').val());
+						} catch(e) {
+							$result.val(e.message)
+							return;
+						}
+
+						var formatted_json = JSON.stringify(json, null, "  ");
+						$result.val(formatted_json);
+					});
+					// sql format
+					$(document).on('click', '#sql-format-exec', function(){
+						var sql = $('#sql-text').val()
+							, $result = $('#sql-result')
+							, formatted = vkbeautify.sql(sql, "    ");
+
+						$result.val(formatted);
+					});
+
+					$(document).on('keypress', '#sql-text', function(ev) {
+						if (ev.which == 13 && ev.ctrlKey) {
+							$('#sql-format-exec').trigger('click');
+							return false;
+						}
+					});
 					// pjax handlers
 					$(document).pjax('a', '#pjax-content');
 					$(document).on('submit', 'form[data-pjax]', function(ev) {
@@ -484,6 +527,8 @@ __halt_compiler(); ?>
 							<li<?php if ($__action == "index") echo ' class="active"'; ?>><a href="?action=index">SQL Binder</a></li>
 							<li<?php if ($__action == "diff") echo ' class="active"'; ?>><a href="?action=diff">Diff</a></li>
 							<li<?php if ($__action == "image_diff") echo ' class="active"'; ?>><a href="?action=image_diff">Image Diff</a></li>
+							<li<?php if ($__action == "json_format") echo ' class="active"'; ?>><a href="?action=json_format">JSON Format</a></li>
+							<li<?php if ($__action == "sql_format") echo ' class="active"'; ?>><a href="?action=sql_format">SQL Format</a></li>
 <!--
 							<li<?php if ($__action == "test") echo ' class="active"'; ?>><a href="?action=test">Test</a></li>
 							<li><a href="#about">About</a></li>
@@ -508,13 +553,13 @@ __halt_compiler(); ?>
 				<form action="?action=index" method="GET" data-pjax="true">
 					<p>
 						<label>SQL</label>
-						<textarea name="sql" rows="3" class="span6"><?php echo h($sql) ?></textarea>
+						<textarea name="sql" rows="3" class="span6 sql-binder-enter-submit"><?php echo h($sql) ?></textarea>
 						<label>Binds</label>
-						<textarea name="binds" rows="3" class="span6"><?php echo h($binds) ?></textarea>
+						<textarea name="binds" rows="3" class="span6 sql-binder-enter-submit"><?php echo h($binds) ?></textarea>
 						<div class="control-group">
-							<input type="submit" value="render" class="btn">
+							<input type="submit" value="Render" class="btn">
 						</div>
-						<textarea rows="4" class="span6" readonly onclick="this.select()"><?php if ($result){ echo h($result); } ?></textarea>
+						<textarea id="sqlbinder-result" rows="4" class="span6" readonly onclick="this.select()"><?php if ($result){ echo h($result); } ?></textarea>
 					</p>
 				</form>
 			</div>
@@ -583,5 +628,20 @@ $(function() {
 })
 $('#capture').focus();
 </script>
+
+@@json_format
+
+		<textarea id="json-data" name="json" rows="3" class="span6"></textarea>
+		<div class="control-group">
+			<button id="json-format-exec" class="btn">Format</button>
+		</div>
+		<textarea id="json-result" rows="10" class="span6" readonly onclick="this.select()"></textarea>
+
+@@sql_format
+		<textarea id="sql-text" name="json" rows="3" class="span6"></textarea>
+		<div class="control-group">
+			<button id="sql-format-exec" class="btn">Format</button>
+		</div>
+		<textarea id="sql-result" rows="10" class="span6" readonly onclick="this.select()"></textarea>
 
 @@test
