@@ -255,7 +255,7 @@ function split_sql(str, tab) {
 				.replace(/\s{0,}UPDATE /ig,"UPDATE ")
 				.replace(/ SET /ig," SET ")
 
-				.replace(/~::~{1,}/g,"~::~")
+				// .replace(/~::~{1,}/g,"~::~")
 				.split('~::~');
 }
 

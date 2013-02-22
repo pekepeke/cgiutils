@@ -23,6 +23,8 @@ if (!function_exists('render')) {
 		ob_start();
 		if (file_exists($view_path)) {
 			include $view_path;
+		} else if (has_partial($view_path)) {
+			partial($view_path, $vars);
 		} else {
 			eval('?>' . section($view_path));
 		}
@@ -80,6 +82,20 @@ function req_is($type) {
 		return call_user_func($detect['callback'], $detect);
 	}
 	return false;
+}
+
+function partial_path($name) {
+	$partial_path = "partial" . DIRECTORY_SEPARATOR . $name . ".html";
+	return $partial_path;
+}
+
+function has_partial($name) {
+	return file_exists(partial_path($name));
+}
+
+function partial($__name, $vars = array()) {
+	extract($vars);
+	include partial_path($__name);
 }
 
 function section($name = null) {
@@ -221,6 +237,7 @@ __halt_compiler(); ?>
 
 		<link rel="stylesheet" href="css/diff.css">
 		<link rel="stylesheet" type="text/css" href="js/difflib/diffview.css">
+		<script src="js/jquery.easing.1.3.js"></script>
 		<script src="js/difflib/difflib.js"></script>
 		<script src="js/difflib/diffview.js"></script>
 		<script src="js/imagediff.min.js"></script>
@@ -479,6 +496,128 @@ __halt_compiler(); ?>
 							return false;
 						}
 					});
+					// easing
+
+					$.fn.fadeToggle = $.fn.fadeToggle || function(speed, easing, callback) {
+						return this.animate({opacity: 'toggle'}, speed, easing, callback);
+					};
+
+					function resetTest() {
+						var effectType = $('#easing-effectType').val();
+						if (effectType == 'fadeIn()'){
+							$('#easing-tester').fadeOut(0)
+						}
+						else if (effectType == 'fadeOut()') {
+							$('#easing-tester').fadeIn(0)
+						}
+						else if (effectType == 'slideDown()') {
+							$('#easing-tester').slideUp(0)
+						}
+						else if ( effectType == 'slideUp()' ) {
+							$('#easing-tester').slideDown(0)
+						}
+						else if (effectType == 'slideToggle()') {
+							$('#easing-tester').slideUp(0)
+						}
+						else if (effectType == 'fadeToggle()') {
+							$('#easing-tester').fadeOut(0)
+						}
+					}
+
+					$(document).on('change', '#easing-effectType, #easing-easeType', function() {
+						$(this).blur()
+						resetTest()
+					})
+
+					function runTest() {
+						var easeType = $('#easing-easeType').val();
+						var effectType = $('#easing-effectType').val();
+						var testDuration = parseInt( $('#easing-testDuration').val() );
+
+						$('#easing-testDuration, #easing-test, #easing-reset').blur()
+
+
+						// alert(testDuration)
+
+						if (effectType == 'fadeIn()'){
+							$('#easing-tester').fadeIn(testDuration,easeType)
+						} else if (effectType == 'fadeOut()') {
+							$('#easing-tester').fadeOut(testDuration,easeType)
+						} else if (effectType == 'slideDown()') {
+							$('#easing-tester').slideDown(testDuration,easeType)
+						} else if ( effectType == 'slideUp()' ) {
+							$('#easing-tester').slideUp(testDuration,easeType)
+						} else if (effectType == 'slideToggle()') {
+							$('#easing-tester').slideToggle(testDuration,easeType)
+						} else if (effectType == 'fadeToggle()') {
+							$('#easing-tester').fadeToggle(testDuration,easeType)
+						}
+					}
+
+					$(document).on('click', '#easing-test', function() {
+						var effectType = $('#easing-effectType').val();
+
+						if (effectType == 'fadeToggle()' || effectType == 'slideToggle()') {
+							runTest()
+						} else {
+							resetTest()
+							runTest()
+						}
+					});
+					$(document).on('click', '#easing-reset', function() {
+						resetTest()
+					})
+					$(document).on('keydown', function(event) {
+						if ($('#easing-easeType').length <= 0) return;
+
+						var effectType = $('#easing-effectType').val()
+							, code = event.keyCode
+							, $duration = $('#easing-testDuration');
+						// alert(event.keyCode)
+						console.log(event.keyCode);
+						if (event.target === $duration.get(0)) {
+							if (!event.altKey && (code == 39 || code == 37)) return;
+							if (code == 38 || code == 40) {
+								// 38 == up, 40 == down
+								var sub = code == 38 ? 100 : -100
+									, val = parseInt($duration.val(), 10) + sub;
+								if (val < 0) {
+									val = 0;
+								}
+								$duration.val(val);
+							}
+							setTimeout(function() {
+								$duration.focus();
+							}, 100);
+						}
+						if (code == 39 || code == 37) {
+							// alert('right')
+							var is_right = code == 39 ? true : false
+								, q = '#easing-easeType option:' + (is_right ?  "last" : "first")
+								, $options = $('#easing-easeType option')
+								, $cur = $('#easing-easeType option:selected')
+								, ease = $(q).val()
+								, $next = is_right ? $cur.next('option') : $cur.prev('option');
+							if ($cur.val()!=ease) {
+								$cur.prop('selected', false);
+								$next.prop('selected', true);
+							}
+						} else if (code == 13) {
+							//alert('return')
+							if (effectType == 'fadeToggle()' || effectType == 'slideToggle()') {
+								runTest()
+							} else {
+								resetTest()
+								runTest()
+							}
+						} else if (code == 32) {
+							//alert('space?')
+						}
+					})
+
+					// resetTest()
+
+					//####################################################################
 					// pjax handlers
 					$(document).pjax('a', '#pjax-content');
 					$(document).on('submit', 'form[data-pjax]', function(ev) {
@@ -529,6 +668,8 @@ __halt_compiler(); ?>
 							<li<?php if ($__action == "image_diff") echo ' class="active"'; ?>><a href="?action=image_diff">Image Diff</a></li>
 							<li<?php if ($__action == "json_format") echo ' class="active"'; ?>><a href="?action=json_format">JSON Format</a></li>
 							<li<?php if ($__action == "sql_format") echo ' class="active"'; ?>><a href="?action=sql_format">SQL Format</a></li>
+							<li<?php if ($__action == "easing") echo ' class="active"'; ?>><a href="?action=easing">Easing</a></li>
+
 <!--
 							<li<?php if ($__action == "test") echo ' class="active"'; ?>><a href="?action=test">Test</a></li>
 							<li><a href="#about">About</a></li>
@@ -549,99 +690,98 @@ __halt_compiler(); ?>
 
 @@index
 
-			<div class="sql-binder">
-				<form action="?action=index" method="GET" data-pjax="true">
-					<p>
-						<label>SQL</label>
-						<textarea name="sql" rows="3" class="span6 sql-binder-enter-submit"><?php echo h($sql) ?></textarea>
-						<label>Binds</label>
-						<textarea name="binds" rows="3" class="span6 sql-binder-enter-submit"><?php echo h($binds) ?></textarea>
-						<div class="control-group">
-							<input type="submit" value="Render" class="btn">
-						</div>
-						<textarea id="sqlbinder-result" rows="4" class="span6" readonly onclick="this.select()"><?php if ($result){ echo h($result); } ?></textarea>
-					</p>
-				</form>
+<div class="sql-binder">
+	<form action="?action=index" method="GET" data-pjax="true">
+		<p>
+			<label>SQL</label>
+			<textarea name="sql" rows="3" class="span6 sql-binder-enter-submit"><?php echo h($sql) ?></textarea>
+			<label>Binds</label>
+			<textarea name="binds" rows="3" class="span6 sql-binder-enter-submit"><?php echo h($binds) ?></textarea>
+			<div class="control-group">
+				<input type="submit" value="Render" class="btn">
 			</div>
+			<textarea id="sqlbinder-result" rows="4" class="span6" readonly onclick="this.select()"><?php if ($result){ echo h($result); } ?></textarea>
+		</p>
+	</form>
+</div>
+
 @@diff
+<div class="form-horizontal">
+	<div class="control-group">
+		<label class="control-label">Context Size (Optional) : </label>
+		<div class="controls">
+			<input type="text" id="param-context-size" value="" class="input-mini">
+		</div>
+		<label class="control-label">
+			Diff View Type:
+		</label>
+		<div class="controls">
+			<label class="radio">
+				<input type="radio" name="_viewtype" checked="checked" id="param-sidebyside">Side by Side
+			</label>
+			<label class="radio">
+				<input type="radio" name="_viewtype" id="param-inline">Inline
+			</label>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="span6">
+		<h3>Base Text</h3>
+		<textarea id="param-base" style="width:100%;height:300px;"></textarea>
+	</div>
+	<div class="span6">
+		<h3>New Text</h3>
+		<textarea id="param-new" style="width:100%;height:300px;"></textarea>
+	</div>
+</div>
+<button type="button" id="btn-exec-diff" value="Diff" class="btn btn-primary btn-large" style="width : 80%; margin : 0 auto; display : block;"> Diff </button><br><br>
 
-
-			<div class="form-horizontal">
-				<div class="control-group">
-					<label class="control-label">Context Size (Optional) : </label>
-					<div class="controls">
-						<input type="text" id="param-context-size" value="" class="input-mini">
-					</div>
-					<label class="control-label">
-						Diff View Type:
-					</label>
-					<div class="controls">
-						<label class="radio">
-							<input type="radio" name="_viewtype" checked="checked" id="param-sidebyside">Side by Side
-						</label>
-						<label class="radio">
-							<input type="radio" name="_viewtype" id="param-inline">Inline
-						</label>
-					</div>
-				</div>
-			</div>
-			<div class="row">
-				<div class="span6">
-					<h3>Base Text</h3>
-					<textarea id="param-base" style="width:100%;height:300px;"></textarea>
-				</div>
-				<div class="span6">
-					<h3>New Text</h3>
-					<textarea id="param-new" style="width:100%;height:300px;"></textarea>
-				</div>
-			</div>
-			<button type="button" id="btn-exec-diff" value="Diff" class="btn btn-primary btn-large" style="width : 80%; margin : 0 auto; display : block;"> Diff </button><br><br>
-
-			<hr>
-			<div id="diff-output"> </div>
+<hr>
+<div id="diff-output"> </div>
 
 @@image_diff
 
-	<div id="capture">
-		<p class="lead">
-			Press Ctrl-V/Cmd-v, clipboard's image will display here.<br >
-			If you want to clear image, double-click the image.
-		</p>
-		<div class="row">
-			<div class="span6">
-				<h3>Image1</h3>
-				<img src="#" id="img-base" style="display:none">
-			</div>
-			<div class="span6">
-				<h3>Image2</h3>
-				<img src="#" id="img-new" style="display:none">
-			</div>
-			<div class="span12">
-				<h3>Diff Result</h3>
-				<div id="img-canvas" class="span12"></div>
-			</div>
+<div id="capture">
+	<p class="lead">
+		Press Ctrl-V/Cmd-v, clipboard's image will display here.<br >
+		If you want to clear image, double-click the image.
+	</p>
+	<div class="row">
+		<div class="span6">
+			<h3>Image1</h3>
+			<img src="#" id="img-base" style="display:none">
+		</div>
+		<div class="span6">
+			<h3>Image2</h3>
+			<img src="#" id="img-new" style="display:none">
+		</div>
+		<div class="span12">
+			<h3>Diff Result</h3>
+			<div id="img-canvas" class="span12"></div>
 		</div>
 	</div>
+</div>
 <script>
-$(function() {
-	$('#capture').pasteCatcher();
-})
-$('#capture').focus();
+	$(function() {
+		$('#capture').pasteCatcher();
+	})
+	$('#capture').focus();
 </script>
 
 @@json_format
 
-		<textarea id="json-data" name="json" rows="3" class="span6"></textarea>
-		<div class="control-group">
-			<button id="json-format-exec" class="btn">Format</button>
-		</div>
-		<textarea id="json-result" rows="10" class="span6" readonly onclick="this.select()"></textarea>
+<textarea id="json-data" name="json" rows="3" class="span6"></textarea>
+<div class="control-group">
+	<button id="json-format-exec" class="btn">Format</button>
+</div>
+<textarea id="json-result" rows="10" class="span6" readonly onclick="this.select()"></textarea>
 
 @@sql_format
-		<textarea id="sql-text" name="json" rows="3" class="span6"></textarea>
-		<div class="control-group">
-			<button id="sql-format-exec" class="btn">Format</button>
-		</div>
-		<textarea id="sql-result" rows="10" class="span6" readonly onclick="this.select()"></textarea>
+<textarea id="sql-text" name="json" rows="3" class="span6"></textarea>
+<div class="control-group">
+	<button id="sql-format-exec" class="btn">Format</button>
+</div>
+<textarea id="sql-result" rows="10" class="span6" readonly onclick="this.select()"></textarea>
 
 @@test
