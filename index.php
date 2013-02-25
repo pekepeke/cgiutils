@@ -85,7 +85,11 @@ function req_is($type) {
 }
 
 function partial_path($name) {
-	$partial_path = "partial" . DIRECTORY_SEPARATOR . $name . ".html";
+	$ext = ".html";
+	if (strpos($name, ".") !== false) {
+		$ext = "";
+	}
+	$partial_path = "partial" . DIRECTORY_SEPARATOR . $name . $ext;
 	return $partial_path;
 }
 
@@ -249,108 +253,11 @@ __halt_compiler(); ?>
 		<script src="//css3-mediaqueries-js.googlecode.com/svn/trunk/css3-mediaqueries.js"></script>
 		<![endif]-->
 		<script>//<![[CDATA[
-			!function($) {
-				var pasteCatcher = document.createElement("div")
-					, is_registered = false;
-				// Firefox allows images to be pasted into contenteditable elements
-				if (!window.Clipboard) {
-					pasteCatcher.setAttribute("contenteditable", "");
-
-					// We can hide the element and append it to the body,
-					pasteCatcher.style.opacity = 0;
-					pasteCatcher.style.height = 0;
-					pasteCatcher.style.width = 0;
-					pasteCatcher.style.position = 'absolute';
-					$(function() {
-						document.body.appendChild(pasteCatcher);
-					});
-				}
-
-				$.fn.pasteCatcher = function() {
-					if (!window.Clipboard) {
-						// pasteCatcher.focus();
-						$(this).on('click', function() {
-							// as long as we make sure it is always in focus
-							$(pasteCatcher).css({
-								top : $(document).scrollTop()
-							}).focus();
-						});
-					}
-
-					// Add the paste event listener
-					if (!is_registered) {
-						$(window).on("paste", pasteHandler);
-						is_registered = true;
-					}
-				};
-
-				/* Handle paste events */
-				function pasteHandler(ev) {
-					var e = ev.originalEvent;
-					// We need to check if event.clipboardData is supported (Chrome)
-					if (e.clipboardData) {
-						// Get the items from the clipboard
-						var items = e.clipboardData.items;
-						if (items) {
-							// Loop through all items, looking for any kind of image
-							for (var i = 0; i < items.length; i++) {
-								if (items[i] && items[i].type.indexOf("image") !== -1) {
-									// We need to represent the image as a file,
-									var blob = items[i].getAsFile();
-									// and use a URL or webkitURL (whichever is available to the browser)
-									// to create a temporary URL to the object
-									var URLObj = window.URL || window.webkitURL;
-									var source = URLObj.createObjectURL(blob);
-
-									// The URL can then be used as the source of an image
-									createImage(source);
-								}
-							}
-						}
-					// If we can't handle clipboard data directly (Firefox),
-					// we need to read what was pasted from the contenteditable element
-					} else {
-						// pasteCatcher.focus();
-						$(pasteCatcher).css({
-							top : $(document).scrollTop()
-						}).focus();
-						// This is a cheap trick to make sure we read the data
-						// AFTER it has been inserted.
-						setTimeout(checkInput, 1);
-					}
-				}
-
-				/* Parse the input in the paste catcher element */
-				function checkInput() {
-					// Store the pasted content in a variable
-					var child = pasteCatcher.childNodes[0];
-
-					// Clear the inner html to make sure we're always
-					// getting the latest inserted content
-					pasteCatcher.innerHTML = "";
-
-					if (child) {
-						// If the user pastes an image, the src attribute
-						// will represent the image as a base64 encoded string.
-						if (child.tagName === "IMG") {
-								createImage(child.src);
-						}
-					}
-				}
-
-				function createImage(source) {
-					// Creates a new image from a given source
-					var pastedImage = new Image();
-					pastedImage.onload = function() {
-						// You now have the image!
-					}
-					pastedImage.src = source;
-					$(window).trigger('pasteCatcher', [pastedImage, source]);
-				}
-			}(jQuery);
+			<?php partial('pastecatcher.js') ?>
 
 			!function($, Global) {
 				$(function() {
+					//####################################################################
 					// index
 					$(document).on('keypress', '.sql-binder-enter-submit', function(ev) {
 						if (ev.which == 13) {
@@ -366,6 +273,7 @@ __halt_compiler(); ?>
 						$that.focus();
 					}).trigger('pjax:success');
 
+					//####################################################################
 					// diff
 					$(document).on('click', '#btn-exec-diff', function(ev) {
 						var base = difflib.stringAsLines($("#param-base").val())
@@ -392,6 +300,7 @@ __halt_compiler(); ?>
 						})
 						return false;
 					});
+					//####################################################################
 					// image diff
 					$(document).on('dblclick', '#img-base', function () {
 						$(this)
@@ -465,6 +374,7 @@ __halt_compiler(); ?>
 							return $target.attr('src', src).hide().get(0);
 						}
 					});
+					//####################################################################
 					// json format
 					$(document).on('click', '#json-format-exec', function() {
 						var //is_unescaped_unicode = $('#json-unescaped-unicode').is(':checked')
@@ -481,6 +391,7 @@ __halt_compiler(); ?>
 						var formatted_json = JSON.stringify(json, null, "  ");
 						$result.val(formatted_json);
 					});
+					//####################################################################
 					// sql format
 					$(document).on('click', '#sql-format-exec', function(){
 						var sql = $('#sql-text').val()
@@ -496,6 +407,8 @@ __halt_compiler(); ?>
 							return false;
 						}
 					});
+
+					//####################################################################
 					// easing
 
 					$.fn.fadeToggle = $.fn.fadeToggle || function(speed, easing, callback) {
@@ -624,21 +537,22 @@ __halt_compiler(); ?>
 						$.pjax.submit(ev, '#pjax-content');
 					});
 
+					//####################################################################
 					// change navbar state
 					$('.nav a').on('click', function() {
 						$('.nav li').removeClass('active');
 						$(this).parent('li').addClass('active');
 					});
-          // navbar collapse
-          $('.navbar-inner a').on('click', function() {
-            if (!$(this).data('target') && !$(this).data('toggle')) {
-              var $link = $('a[data-toggle="collapse"]')
-                , $target = $($link.data('target'));
-              if ($target.hasClass('in')) {
-                $link.trigger('click');
-              }
-            }
-          });
+					// navbar collapse
+					$('.navbar-inner a').on('click', function() {
+						 if (!$(this).data('target') && !$(this).data('toggle')) {
+								var $link = $('a[data-toggle="collapse"]')
+									 , $target = $($link.data('target'));
+								if ($target.hasClass('in')) {
+									 $link.trigger('click');
+							}
+						}
+					});
 				})
 			}(jQuery, this);
 		//]]></script>
@@ -667,7 +581,6 @@ __halt_compiler(); ?>
 							<li<?php if ($__action == "diff") echo ' class="active"'; ?>><a href="?action=diff">Diff</a></li>
 							<li<?php if ($__action == "image_diff") echo ' class="active"'; ?>><a href="?action=image_diff">Image Diff</a></li>
 							<li<?php if ($__action == "json_format") echo ' class="active"'; ?>><a href="?action=json_format">JSON Format</a></li>
-							<li<?php if ($__action == "sql_format") echo ' class="active"'; ?>><a href="?action=sql_format">SQL Format</a></li>
 							<li<?php if ($__action == "easing") echo ' class="active"'; ?>><a href="?action=easing">Easing</a></li>
 
 <!--
@@ -690,20 +603,49 @@ __halt_compiler(); ?>
 
 @@index
 
-<div class="sql-binder">
-	<form action="?action=index" method="GET" data-pjax="true">
-		<p>
-			<label>SQL</label>
-			<textarea name="sql" rows="3" class="span6 sql-binder-enter-submit"><?php echo h($sql) ?></textarea>
-			<label>Binds</label>
-			<textarea name="binds" rows="3" class="span6 sql-binder-enter-submit"><?php echo h($binds) ?></textarea>
-			<div class="control-group">
-				<input type="submit" value="Render" class="btn">
+<div class="accordion" id="js-accordion-index">
+	<div class="accordion-group">
+		<div class="accordion-heading">
+			<a href="#js-accordion-sql-binder" class="accordion-toggle btn btn-inverse" data-toggle="collapse" data-parent="#js-accordion-index">
+				<i class="icon-random icon-white"></i> SQL Binder
+			</a>
+		</div>
+		<div class="sql-binder accordion-body collapse in" id="js-accordion-sql-binder">
+			<div class="accordion-inner">
+				<form action="?action=index" method="GET" data-pjax="true">
+					<p>
+						<label>SQL</label>
+						<textarea name="sql" rows="3" class="span6 sql-binder-enter-submit"><?php echo h($sql) ?></textarea>
+						<label>Binds</label>
+						<textarea name="binds" rows="3" class="span6 sql-binder-enter-submit"><?php echo h($binds) ?></textarea>
+						<div class="control-group">
+							<input type="submit" value="Render" class="btn">
+						</div>
+						<textarea id="sqlbinder-result" rows="4" class="span6" readonly onclick="this.select()"><?php if ($result){ echo h($result); } ?></textarea>
+					</p>
+				</form>
 			</div>
-			<textarea id="sqlbinder-result" rows="4" class="span6" readonly onclick="this.select()"><?php if ($result){ echo h($result); } ?></textarea>
-		</p>
-	</form>
+		</div>
+	</div>
+	<div class="accordion-group">
+		<div class="accordion-heading">
+
+			<a href="#js-accordion-sql-format" class="accordion-toggle btn btn-inverse" data-toggle="collapse" data-parent="#js-accordion-index">
+				<i class="icon-align-justify icon-white"></i> SQL Format
+			</a>
+		</div>
+		<div id="js-accordion-sql-format" class="accordion-body collapse">
+			<div class="accordion-inner">
+				<textarea id="sql-text" name="json" rows="3" class="span6"></textarea>
+				<div class="control-group">
+					<button id="sql-format-exec" class="btn">Format</button>
+				</div>
+				<textarea id="sql-result" rows="10" class="span6" readonly onclick="this.select()"></textarea>
+			</div>
+		</div>
+	</div>
 </div>
+
 
 @@diff
 <div class="form-horizontal">
@@ -743,6 +685,7 @@ __halt_compiler(); ?>
 @@image_diff
 
 <div id="capture">
+	<h2>Image Diff</h2>
 	<p class="lead">
 		Press Ctrl-V/Cmd-v, clipboard's image will display here.<br >
 		If you want to clear image, double-click the image.
@@ -771,17 +714,10 @@ __halt_compiler(); ?>
 
 @@json_format
 
+<h2>JSON Format</h2>
 <textarea id="json-data" name="json" rows="3" class="span6"></textarea>
 <div class="control-group">
 	<button id="json-format-exec" class="btn">Format</button>
 </div>
 <textarea id="json-result" rows="10" class="span6" readonly onclick="this.select()"></textarea>
 
-@@sql_format
-<textarea id="sql-text" name="json" rows="3" class="span6"></textarea>
-<div class="control-group">
-	<button id="sql-format-exec" class="btn">Format</button>
-</div>
-<textarea id="sql-result" rows="10" class="span6" readonly onclick="this.select()"></textarea>
-
-@@test
