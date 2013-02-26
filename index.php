@@ -577,7 +577,7 @@ __halt_compiler(); ?>
 					<a class="brand" href="?action=index">Utilities</a>
 					<div class="nav-collapse">
 						<ul class="nav">
-							<li<?php if ($__action == "index") echo ' class="active"'; ?>><a href="?action=index">SQL Binder</a></li>
+							<li<?php if ($__action == "index") echo ' class="active"'; ?>><a href="?action=index">SQL Tools</a></li>
 							<li<?php if ($__action == "diff") echo ' class="active"'; ?>><a href="?action=diff">Diff</a></li>
 							<li<?php if ($__action == "image_diff") echo ' class="active"'; ?>><a href="?action=image_diff">Image Diff</a></li>
 							<li<?php if ($__action == "json_format") echo ' class="active"'; ?>><a href="?action=json_format">JSON Format</a></li>
@@ -714,10 +714,101 @@ __halt_compiler(); ?>
 
 @@json_format
 
-<h2>JSON Format</h2>
-<textarea id="json-data" name="json" rows="3" class="span6"></textarea>
-<div class="control-group">
-	<button id="json-format-exec" class="btn">Format</button>
-</div>
-<textarea id="json-result" rows="10" class="span6" readonly onclick="this.select()"></textarea>
+<div class="accordion" id="js-accordion-jsutils">
+	<div class="accordion-group">
+		<div class="accordion-heading">
+			<a href="#js-accordion-json-tool" class="accordion-toggle btn btn-inverse" data-toggle="collapse" data-parent="#js-accordion-jsutils">
+				<i class="icon-align-justify icon-white"></i> JSON Format
+			</a>
+		</div>
+		<div class="sql-binder accordion-body collapse in" id="js-accordion-json-tool">
+			<div class="accordion-inner">
+				<textarea id="json-data" name="json" rows="3" class="span6"></textarea>
+				<div class="control-group">
+					<button id="json-format-exec" class="btn">Format</button>
+				</div>
+				<textarea id="json-result" rows="10" class="span6" readonly onclick="this.select()"></textarea>
+			</div>
+		</div>
+	</div>
+	<div class="accordion-group">
+		<div class="accordion-heading">
+			<a href="#js-accordion-keycode" class="accordion-toggle btn btn-inverse" data-toggle="collapse" data-parent="#js-accordion-jsutils">
+				<i class="icon-fire icon-white"></i> KeyCode
+			</a>
+		</div>
+		<div id="js-accordion-keycode" class="accordion-body collapse">
+			<div class="accordion-inner">
+				<input type="text" placeholder="Input Key..." id="js-keycode-input">
+				<table class="table">
+					<tr>
+						<th>keydown</th>
+						<th>keypress</th>
+						<th>keyup</th>
+					</tr>
+					<tr>
+						<td id="js-keycode-keydown"></td>
+						<td id="js-keycode-keypress"></td>
+						<td id="js-keycode-keyup"></td>
+					</tr>
+					<tr>
+						<td id="js-keycode-keydown-char">　</td>
+						<td id="js-keycode-keypress-char">　</td>
+						<td id="js-keycode-keyup-char">　</td>
+					</tr>
+					<tr>
+						<td id="js-keycode-keydown-shift">　</td>
+						<td id="js-keycode-keypress-shift">　</td>
+						<td id="js-keycode-keyup-shift">　</td>
+					</tr>
+				</table>
+				<?php echo partial('keycode.html') ?>
 
+			</div>
+		</div>
+<script type="text/javascript">
+!function($) {
+	var fn = function(event_name) {
+		var q = '#js-keycode-' + event_name
+			, c_q = q + '-char'
+			, s_q = q + '-shift'
+			, attrs = "shiftKey,metaKey,altKey".split(",")
+			, counter = 0;
+		return function(e) {
+			console.log(e);
+			$(q).text(++counter % 2 ? '◇' : '◆');
+
+			var code = e.keyCode || e.charCode
+				, shifts = $(attrs).filter(function() {
+				return e[this]
+			}).toArray().join(",");
+			$(c_q).text([
+				String.fromCharCode(code)
+				, ' [ ', e.which, ',keyCode=',e.keyCode , ',charCode=', e.charCode, ' ]'
+			].join(""));
+			$(s_q).text(shifts || '　');
+			e.preventDefault();
+		};
+	}
+	$('#js-keycode-input')
+		.on('keydown', fn("keydown"))
+		.on('keypress', fn("keypress"))
+		.on('keyup', fn("keyup"));
+}(jQuery);
+</script>
+	</div>
+
+<!--
+	<div class="accordion-group">
+		<div class="accordion-heading">
+			<a href="#js-accordion-xxx" class="accordion-toggle btn btn-inverse" data-toggle="collapse" data-parent="#js-accordion-jsutils">
+				<i class="icon-align-justify icon-white"></i> Dummy
+			</a>
+		</div>
+		<div id="js-accordion-xxx" class="accordion-body collapse">
+			<div class="accordion-inner">
+			</div>
+		</div>
+	</div>
+ -->
+</div>
