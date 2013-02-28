@@ -1,574 +1,5 @@
 <style>
-* {
-	margin: 0;
-	padding: 0;
-}
-/*
-body {
-	background: #fff;
-	color: #000;
-	font-size: 16px;
-}
-*/
-body,pre strong {
-	/*
-	font-family: "PT Sans",sans-serif;
-	*/
-}
-code {
-	font-family: "PT Mono",monospace;
-	font-size: 14px;
-}
-a {
-	outline: none;
-}
-.root,footer {
-	margin: 0 auto;
-	max-width: 96%;
-	position: relative;
-	width: 899px;
-}
-.about {
-	line-height: 1.3;
-	padding: 20px 164px 5px 0;
-}
-.about p {
-	margin-bottom: 5px;
-}
-.easings {
-	/*margin: 0 -30px 0 -10px;*/
-	margin: 0 -30px 0 -30px;
-	position: relative;
-}
-.easings ul {
-	display: inline-block;
-	/*margin-right: 20px; */
-	margin-right: 0px;
-}
-.easings .part {
-	position: relative;
-}
-.easings .part ul {
-	moz-transition: opacity 400ms;
-	o-transition: opacity 400ms;
-	transition: opacity 400ms;
-	webkit-transition: opacity 400ms;
-}
-.easings .part-title {
-	color: #999;
-	font-size: 14px;
-	font-weight: normal;
-	position: absolute;
-	right: 35px;
-	text-align: right;
-	top: -12px;
-	width: 40px;
-}
-.easings.hightlight-part .part ul {
-	opacity: 0.15;
-}
-.easings.hightlight-part .part:hover ul {
-	opacity: 1;
-}
-.easing {
-	display: inline-block;
-	list-style: none;
-	margin: 3px 5px;
-	padding: 5px;
-	position: relative;
-}
-.easing.linear {
-	position: absolute;
-	right: 25px;
-	top: 11px;
-	z-index: 2;
-}
-.easing.linear .easing-title {
-	margin-bottom: -35px;
-}
-.easing.easeOutElastic .easing-title {
-	box-shadow: #fff 0 26px 8px -8px inset;
-	moz-box-shadow: #fff 0 26px 8px -8px inset;
-	webkit-box-shadow: #fff 0 26px 8px -8px inset;
-}
-.easing .button {
-	margin: -5px;
-	padding: 5px;
-}
-.easing .easing-title {
-	font-size: 15px;
-	font-weight: normal;
-	margin-bottom: -25px;
-	position: relative;
-	text-align: center;
-	z-index: 2;
-}
-.easing .graph {
-	position: relative;
-	text-decoration: none;
-}
-.easings .easing.pressed {
-	background: #f0f0f0;
-	box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
-}
-.easings .easing.pressed .button {
-	background: #fff;
-	box-shadow: 0 0 2px rgba(0,0,0,0.3);
-	moz-transform: scale(0.9, 0.9);
-	ms-transform: scale(0.9, 0.9);
-	o-transform: scale(0.9, 0.9);
-	transform: scale(0.9, 0.9);
-	webkit-transform: scale(0.9, 0.9);
-}
-.graph svg {
-	height: 140px;
-	margin-bottom: -30px;
-	width: 124px;
-}
-.graph svg line {
-	stroke: #bbb;
-	stroke-width: 1px;
-}
-.graph svg path {
-	fill: rgba(255,255,255,0);
-	fill: transparent;
-	stroke: #000;
-	stroke-width: 2px;
-}
-.graph svg text {
-	fill: #bbb;
-	font-size: 12px;
-}
-.graph {
-	display: inline-block;
-	position: relative;
-}
-.graph .example {
-	background: #e40000;
-	background: linear-gradient(#fe0000,#d00000);
-	background: -moz-linear-gradient(#fe0000,#d00000);
-	background: -o-linear-gradient(#fe0000,#d00000);
-	background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #fe0000), color-stop(100%, #d00000));
-	background: -webkit-linear-gradient(#fe0000,#d00000);
-	height: 12px;
-	overflow: hidden;
-	position: absolute;
-	width: 21px;
-	z-index: 10;
-}
-.graph .example .top,.graph .example .bottom {
-	background: #fff;
-	height: 15px;
-	left: -11px;
-	moz-transform: rotate(45deg);
-	ms-transform: rotate(45deg);
-	o-transform: rotate(45deg);
-	position: absolute;
-	transform: rotate(45deg);
-	webkit-transform: rotate(45deg);
-	width: 15px;
-}
-.graph .example .top {
-	top: -8px;
-}
-.graph .example .bottom {
-	top: 5px;
-}
-.graph .dot {
-	background: #ddd;
-	border-radius: 2px;
-	height: 2px;
-	moz-border-radius: 2px;
-	position: absolute;
-	webkit-border-radius: 2px;
-	width: 2px;
-}
-.easing .graph .example,.easing .graph .dot {
-	moz-transition: opacity 200ms;
-	opacity: 0;
-	o-transition: opacity 200ms;
-	transition: opacity 200ms;
-	webkit-transition: opacity 200ms;
-}
-.easing .graph .example {
-	left: 122px;
-	top: 94px;
-}
-.easing .graph .dot {
-	left: 1px;
-	top: 99px;
-}
-.easing:hover .graph .example,.easing:hover .graph .dot {
-	opacity: 1;
-}
-.howtos h2 {
-	font-size: 25px;
-	font-weight: normal;
-	padding: 17px 0 5px 0;
-}
-.howtos h3 {
-	font-size: 25px;
-}
-.easing-description .back {
-	color: red;
-	float: right;
-	margin-top: 19px;
-	text-decoration: none;
-}
-.easing-description .back .text {
-	border-bottom: 1px dotted;
-	display: inline-block;
-	margin-left: 5px;
-}
-.easing-description .back:hover .text {
-	border-bottom-style: solid;
-}
-.easing-description h2 {
-	font-size: 25px;
-	font-weight: normal;
-	margin-top: 15px;
-}
-.easing-description h3 {
-	font-size: 22px;
-}
-.easing-description .graph {
-	margin: -20px 0 -10px 0;
-}
-.easing-description .graph .example {
-	left: 161.2px;
-	top: 124px;
-}
-.easing-description .graph .dot {
-	border-radius: 2px;
-	height: 4px;
-	left: 2px;
-	top: 128px;
-	width: 4px;
-}
-.easing-description .graph .example,.easing-description .graph .dot {
-	moz-transition: opacity 200ms;
-	opacity: 0;
-	o-transition: opacity 200ms;
-	transition: opacity 200ms;
-	webkit-transition: opacity 200ms;
-}
-.easing-description .graph svg {
-	height: 182px;
-	width: 161.2px;
-}
-.easing-description.exampled .graph .example,.easing-description.exampled .graph .dot {
-	opacity: 1;
-}
-.howtos p,.easing-description p {
-	padding-bottom: 5px;
-}
-.howtos p a,.easing-description p a {
-	border-bottom: 1px solid #bbb;
-	color: #000;
-	display: inline-block;
-	line-height: 1;
-	moz-transition: border-bottom-color 150ms;
-	o-transition: border-bottom-color 150ms;
-	text-decoration: none;
-	transition: border-bottom-color 150ms;
-	webkit-transition: border-bottom-color 150ms;
-}
-.howtos p a:hover,.easing-description p a:hover {
-	border-bottom-color: #000;
-}
-.howtos pre,.easing-description pre {
-	font-size: 13px;
-	padding: 5px 0 10px 0;
-}
-.howtos pre strong,.easing-description pre strong {
-	color: red;
-	font-size: 14px;
-	font-weight: normal;
-	white-space: nowrap;
-}
-.howtos h3,.easing-description h3 {
-	font-weight: normal;
-	padding: 7px 0 5px 0;
-}
-.page-crop {
-	margin: -10px 0 0 -10px;
-	overflow: hidden;
-	padding: 10px 0 0 10px;
-}
-.easing-description {
-	display: none;
-	left: 105%;
-	position: absolute;
-	top: 0;
-	width: 100%;
-}
-.page-slider {
-	left: 0;
-	position: relative;
-}
-.page-animation .page-slider {
-	moz-transition: left 600ms cubic-bezier(0.770, 0.000, 0.175, 1.000);
-	o-transition: left 600ms cubic-bezier(0.770, 0.000, 0.175, 1.000);
-	transition: left 600ms cubic-bezier(0.770, 0.000, 0.175, 1.000);
-	webkit-transition: left 600ms cubic-bezier(0.770, 0.000, 0.175, 1.000);
-}
-.page-animation .easing.linear {
-	moz-transition: top 600ms cubic-bezier(0.770, 0.000, 0.175, 1.000);
-	o-transition: top 600ms cubic-bezier(0.770, 0.000, 0.175, 1.000);
-	transition: top 600ms cubic-bezier(0.770, 0.000, 0.175, 1.000);
-	webkit-transition: top 600ms cubic-bezier(0.770, 0.000, 0.175, 1.000);
-}
-.easing-page .page-slider {
-	left: -105%;
-}
-.easing-page .easing.linear {
-	/*top: -105px;*/
-	top: -205px;
-}
-.open-source {
-	height: 80px;
-	position: absolute;
-	right: 0;
-	text-decoration: none;
-	top: 0;
-	width: 80px;
-}
-.open-source .crop {
-	display: block;
-	height: 90px;
-	left: -10px;
-	overflow: hidden;
-	position: absolute;
-	top: 0;
-	width: 90px;
-}
-.open-source:active .background {
-	background: #ddd;
-}
-.open-source .background,.open-source .corner {
-	height: 120px;
-	left: 32px;
-	moz-transform: rotate(45deg);
-	ms-transform: rotate(45deg);
-	o-transform: rotate(45deg);
-	position: absolute;
-	top: -65px;
-	transform: rotate(45deg);
-	webkit-transform: rotate(45deg);
-	width: 120px;
-}
-.open-source .background {
-	background: #e8e8e8;
-	box-shadow: rgba(0,0,0,0.5) 0 -7px 7px -7px inset;
-	moz-box-shadow: rgba(0,0,0,0.5) 0 -7px 7px -7px inset;
-	webkit-box-shadow: rgba(0,0,0,0.5) 0 -7px 7px -7px inset;
-}
-.open-source .source {
-	color: #000;
-	left: 40px;
-	line-height: 1.1;
-	position: absolute;
-	text-shadow: #fff 0 1px 0;
-}
-.open-source .source code {
-	font-size: 10px;
-}
-.open-source .source-crop {
-	background: #fff;
-	height: 120px;
-	left: -50px;
-	moz-transform: rotate(45deg);
-	ms-transform: rotate(45deg);
-	o-transform: rotate(45deg);
-	position: absolute;
-	top: 22px;
-	transform: rotate(45deg);
-	webkit-transform: rotate(45deg);
-	width: 120px;
-}
-html,body {
-	height: 100%;
-}
-.root {
-	clear: both;
-	height: 100%;
-	height: auto !important;
-	margin-bottom: -40px;
-	min-height: 100%;
-}
-.root .root-footer {
-	height: 40px;
-}
-footer {
-	clear: both;
-	height: 40px;
-	position: relative;
-}
-footer {
-	height: 40px;
-	text-align: right;
-}
-footer a {
-	color: #888;
-	line-height: 40px;
-}
-footer a:hover {
-	text-decoration: none;
-}
-footer .author {
-	float: left;
-	font-size: 13px;
-	moz-transition: color 400ms;
-	o-transition: color 400ms;
-	padding-left: 27px;
-	position: relative;
-	transition: color 400ms;
-	webkit-transition: color 400ms;
-}
-footer .author:hover {
-	color: #000;
-	text-decoration: none;
-}
-footer .author:hover .hover {
-	top: 0;
-}
-footer .mask {
-	background-color: #888;
-	left: 0;
-	overflow: hidden;
-	position: absolute;
-	top: 9px;
-}
-footer .hover {
-	background: #000;
-	height: 100%;
-	moz-transition: top 400ms cubic-bezier(0.770, 0.000, 0.175, 1.000);
-	o-transition: top 400ms cubic-bezier(0.770, 0.000, 0.175, 1.000);
-	position: absolute;
-	top: -100%;
-	transition: top 400ms cubic-bezier(0.770, 0.000, 0.175, 1.000);
-	webkit-transition: top 400ms cubic-bezier(0.770, 0.000, 0.175, 1.000);
-	width: 100%;
-}
-@media (max-height: 768px) {
-	.about {
-		padding-top: 15px;
-	}
-	.easing.linear {
-		top: 6px;
-	}
-}
-@media (max-width: 899px) {
-	.easings {
-		text-align: center;
-	}
-	.easings .part-title {
-		font-size: 12px;
-		left: auto;
-		margin: -3px 0 -1px 0;
-		position: static;
-		text-align: center;
-		top: auto;
-		width: auto;
-	}
-}
-body.tablet .easing .graph .example,body.tablet .easing .graph .dot {
-	display: none;
-}
-@media (max-width: 600px) {
-	.root,footer {
-		max-width: 100%;
-		padding: 0 10px;
-		width: auto;
-	}
-	.about {
-		padding-top: 10px;
-	}
-	.easing .link,.easing-description .graph {
-		webkit-tap-highlight-color: rgba(255,255,255,0);
-	}
-	.easing {
-		margin: 3px 0;
-	}
-	.easing .easing-title {
-		font-size: 13px;
-	}
-	.easing .graph .example,.easing .graph .dot {
-		display: none;
-	}
-	pre {
-		white-space: -hp-pre-wrap;
-		white-space: -moz-pre-wrap;
-		white-space: -o-pre-wrap;
-		white-space: pre;
-		white-space: pre-line;
-		white-space: pre-wrap;
-		white-space: -pre-wrap;
-		word-wrap: break-word;
-	}
-	.open-source {
-		display: none;
-	}
-	footer .author {
-		font-size: 12px;
-	}
-}
-@media (max-width: 481px) {
-	.about {
-		padding: 10px 0 5px 0;
-	}
-	.easing.linear {
-		display: none;
-	}
-	.easings {
-		margin: 0;
-	}
-	.easings ul {
-		margin-right: 0;
-	}
-	.easings .easing {
-		left: -2px;
-	}
-	.howtos {
-		padding: 0 10px;
-	}
-	.graph svg {
-		height: 119px;
-		width: 105.4px;
-	}
-	.howtos h2 {
-		font-size: 23px;
-	}
-	.howtos h3 {
-		font-size: 23px;
-	}
-	.page-crop {
-		margin: 0 -10px;
-		padding: 0;
-	}
-	.easing-description {
-		box-sizing: border-box;
-		margin-top: -10px;
-		moz-box-sizing: border-box;
-		padding: 0 10px;
-		webkit-box-sizing: border-box;
-	}
-	.easing-description .back {
-		font-size: 14px;
-	}
-	.easing-description h2 {
-		font-size: 23px;
-	}
-	.easing-description h3 {
-		font-size: 20px;
-	}
-}
-@media (max-width: 332px) {
-	.graph svg {
-		height: 105px;
-		width: 93px;
-	}
-}
+<?php echo partial('easing.css') ?>
 </style>
 <div class="root">
   <div class="about">
@@ -593,7 +24,7 @@ body.tablet .easing .graph .example,body.tablet .easing .graph .dot {
   <div class="page-crop">
 	<button class="btn btn-primary easing-graph-toggle">Show/Hide</button>
     <div class="page-slider">
-      <div class="easings">
+      <div class="easings" style="display:none;">
         <div class="part css">
           <h2 class="part-title" title="いつでも使用可能">css+js</h2>
           <ul>
@@ -1152,9 +583,32 @@ body.tablet .easing .graph .example,body.tablet .easing .graph .dot {
 #easing-fadeToggle {
 	clear: both;
 }
+#easing-graph a {
+	z-index: -1;
+}
+#easing-graph .graph {
+	margin-top: -40px;
+}
+#easing-graph .dot {
+	display : none;
+}
+#easing-graph .example {
+	background : none;
+}
+#easing-graph .example .top, #easing-graph .example .bottom{
+	display : none;
+}
+#jq-graphs {
+  display : block;
+}
+#jq-graphs .jq-graph {
+  margin-left: 10px;
+  font-size : 10px;
+  display : inline-block;
+  float : left;
+}
 -->
 </style>
-
 
 	<h3>jQuery Easing Tester</h3>
 	<p>jQuery <a href="http://gsgd.co.uk/sandbox/jquery/easing/">easing</a></p>
@@ -1213,10 +667,13 @@ body.tablet .easing .graph .example,body.tablet .easing .graph .dot {
 		<input name="testDuration" id="easing-testDuration" value="1000" size="4" maxlength="4" type="text">
 	</p>
 	<p>
-		<input name="test" id="easing-test" value="Test" type="submit">
-		<input name="reset" id="easing-reset" value="Reset" type="submit">
+		<input name="test" id="easing-test" value="Test" type="submit" class="btn btn-primary">
+		<input name="reset" id="easing-reset" value="Reset" type="submit" class="btn btn-danger">
+		<div id="easing-graph"></div>
 	</p>
 	<p>Power User Tip: Use the <strong>Left</strong> and <strong>Right</strong> arrow keys to cycle betwen easing types, and use <strong>Enter/Return</strong> to test and retest.</p>
+
+<div id="jq-graphs"></div>
 
       	</section>
 
@@ -2974,6 +2431,93 @@ body.tablet .easing .graph .example,body.tablet .easing .graph .dot {
 	$('.easing-graph-toggle').on('click', function() {
 		$('.easings').fadeToggle(500);
 	});
+
+	$('#easing-easeType').on('change', function() {
+		var text = $(this).find(':selected').text();
+		var $el = $('.easing.' + text).find('.graph').clone();
+		$el.attr('href', '#');
+		$('#easing-graph')
+			.children()
+			.remove()
+			.end()
+			.append($el);
+	}).trigger('change');
+
+
+    if ( !$( "<canvas>" )[0].getContext ) {
+      $( "<div>" ).text(
+        "Your browser doesn't support canvas, which is required for this demo."
+      ).appendTo( "#jq-graphs" );
+      return;
+    }
+
+    var i = 0,
+      width = 100,
+      height = 100;
+
+    $.each( $.easing, function( name, impl ) {
+      if (typeof impl !== 'function') { return ;}
+      var graph = $( "<div>" ).addClass( "jq-graph" ).appendTo( "#jq-graphs" ),
+        text = $( "<div>" ).text( ++i + ". " + name ).appendTo( graph ),
+        wrap = $( "<div>" ).appendTo( graph ).css( 'overflow', 'hidden' ),
+        canvas = $( "<canvas>" ).appendTo( wrap )[ 0 ];
+
+      canvas.width = width;
+      canvas.height = height;
+      var drawHeight = height * 0.8,
+        cradius = 10;
+        ctx = canvas.getContext( "2d" );
+      ctx.fillStyle = "black";
+
+      // draw background
+      ctx.beginPath();
+      ctx.moveTo( cradius, 0 );
+      ctx.quadraticCurveTo( 0, 0, 0, cradius );
+      ctx.lineTo( 0, height - cradius );
+      ctx.quadraticCurveTo( 0, height, cradius, height );
+      ctx.lineTo( width - cradius, height );
+      ctx.quadraticCurveTo( width, height, width, height - cradius );
+      ctx.lineTo( width, 0 );
+      ctx.lineTo( cradius, 0 );
+      ctx.fill();
+
+      // draw bottom line
+      ctx.strokeStyle = "#555";
+      ctx.beginPath();
+      ctx.moveTo( width * 0.1, drawHeight + .5 );
+      ctx.lineTo( width * 0.9, drawHeight + .5 );
+      ctx.stroke();
+
+      // draw top line
+      ctx.strokeStyle = "#555";
+      ctx.beginPath();
+      ctx.moveTo( width * 0.1, drawHeight * .3 - .5 );
+      ctx.lineTo( width * 0.9, drawHeight * .3 - .5 );
+      ctx.stroke();
+
+      // plot easing
+      ctx.strokeStyle = "white";
+      ctx.beginPath();
+      ctx.lineWidth = 2;
+      ctx.moveTo( width * 0.1, drawHeight );
+      $.each( new Array( width ), function( position ) {
+        var state = position / width,
+          val = impl( state, position, 0, 1, width );
+        ctx.lineTo( position * 0.8 + width * 0.1,
+          drawHeight - drawHeight * val * 0.7 );
+      });
+      ctx.stroke();
+      var h = wrap.height()
+      // animate on click
+      graph.click(function() {
+        wrap
+          .animate( { height: 0 }, 2000, name )
+          .delay( 800 )
+          .animate( { height: h }, 2000, name );
+      });
+
+      graph.width( width ).height( height + text.height() + 10 );
+    });
 
 })(this);
 </script>
