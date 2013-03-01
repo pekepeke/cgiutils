@@ -1,6 +1,56 @@
 <style>
 <?php echo partial('easing.css') ?>
 </style>
+<style type="text/css">
+<!--
+#easing-tester {
+	/* background-color: #900; */
+	background-color: #D40012;
+	height: 300px;
+	width: 300px;
+}
+#easing-holder {
+	background-color: #E5E5E5;
+	height: 300px;
+	width: 300px;
+	float: left;
+	margin-right: 30px;
+	margin-bottom: 30px;
+}
+#easing-fadeToggle {
+	clear: both;
+}
+#easing-graph {
+}
+#easing-graph a {
+	z-index: -1;
+}
+#easing-graph .graph {
+	margin-top: -40px;
+	z-index: -1;
+}
+#easing-graph .dot {
+	display : none;
+}
+#easing-graph .example {
+	background : none;
+}
+#easing-graph .example .top, #easing-graph .example .bottom{
+	display : none;
+}
+#jq-graphs {
+  display : block;
+}
+#jq-graphs .jq-graph {
+  margin-left: 10px;
+  font-size : 10px;
+  display : inline-block;
+  float : left;
+}
+-->
+</style>
+
+
 <div class="root">
   <div class="about">
     <p>
@@ -564,52 +614,6 @@
       </div>
       <article class="howtos">
       	<section class="tester clearfix">
-<style type="text/css">
-<!--
-#easing-tester {
-	/* background-color: #900; */
-	background-color: #D40012;
-	height: 300px;
-	width: 300px;
-}
-#easing-holder {
-	background-color: #E5E5E5;
-	height: 300px;
-	width: 300px;
-	float: left;
-	margin-right: 30px;
-	margin-bottom: 30px;
-}
-#easing-fadeToggle {
-	clear: both;
-}
-#easing-graph a {
-	z-index: -1;
-}
-#easing-graph .graph {
-	margin-top: -40px;
-}
-#easing-graph .dot {
-	display : none;
-}
-#easing-graph .example {
-	background : none;
-}
-#easing-graph .example .top, #easing-graph .example .bottom{
-	display : none;
-}
-#jq-graphs {
-  display : block;
-}
-#jq-graphs .jq-graph {
-  margin-left: 10px;
-  font-size : 10px;
-  display : inline-block;
-  float : left;
-}
--->
-</style>
-
 	<h3>jQuery Easing Tester</h3>
 	<p>jQuery <a href="http://gsgd.co.uk/sandbox/jquery/easing/">easing</a></p>
 	<div id="easing-holder">
@@ -673,7 +677,9 @@
 	</p>
 	<p>Power User Tip: Use the <strong>Left</strong> and <strong>Right</strong> arrow keys to cycle betwen easing types, and use <strong>Enter/Return</strong> to test and retest.</p>
 
-<div id="jq-graphs"></div>
+	<h4>jQuery easing graphs</h4><button class="btn btn-primary" onclick="jQuery('#jq-graphs').fadeToggle()">Show/Hide</button>
+	<div id="jq-graphs">
+	</div>
 
       	</section>
 
@@ -2287,6 +2293,7 @@
   	<ul class="nav">
 	  	<li><a href="http://matthewlein.com/experiments/easing.html"><i class="icon-globe"></i> jQuery Easing Examples - Matthew Lein</a></li>
   		<li><a href="http://easings.net/ja"><i class="icon-globe"></i> Easing Function 早見表</a></li>
+<li><a href="http://jqueryui.com/resources/demos/effect/easing.html"><i class="icon-globe"></i> jQuery UI Effects - Easing demo</a></li>
   	</ul>
   </div>
 </div>
