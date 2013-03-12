@@ -26,7 +26,12 @@ if (!function_exists('render')) {
 		} else if (has_partial($view_path)) {
 			partial($view_path, $vars);
 		} else {
-			eval('?>' . section($view_path));
+			$src = section($view_path);
+			if ($src) {
+				eval('?>' . section($view_path));
+			} else {
+				echo $vars["contents"];
+			}
 		}
 		$content = ob_get_clean();
 		return $content;
@@ -174,6 +179,21 @@ function action_index() {
 	set(compact('sql', 'binds', 'result'));
 }
 
+function action_ajax_xml_format() {
+	$xml = simplexml_load_string(params("xml_data"));
+
+	$dom = dom_import_simplexml($xml)->ownerDocument;
+	$dom->preserveWhiteSpace = false;
+	$dom->loadXML(params("xml_data"));
+	$dom->formatOutput = true;
+	set("contents", $dom->saveXml());
+}
+
+function action_ajax_xml_json() {
+	$xml = simplexml_load_string(params("xml_data"));
+	set('contents', json_encode($xml));
+}
+
 
 function run() {
 	$action = params("action");
@@ -245,6 +265,7 @@ __halt_compiler(); ?>
 		<script src="js/difflib/difflib.js"></script>
 		<script src="js/difflib/diffview.js"></script>
 		<script src="js/imagediff.min.js"></script>
+		<script src="js/resemble.js"></script>
 		<script src="js/vkbeautify.js"></script>
 
 		<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
@@ -722,7 +743,7 @@ __halt_compiler(); ?>
 				<i class="icon-fire icon-white"></i> KeyCode
 			</a>
 		</div>
-		<div id="js-accordion-keycode" class="accordion-body collapse in">
+		<div id="js-accordion-keycode" class="accordion-body collapse">
 			<div class="accordion-inner">
 				<input type="text" placeholder="Input Key..." id="js-keycode-input">
 				<table class="table">
@@ -799,6 +820,37 @@ __halt_compiler(); ?>
 		</div>
 	</div>
 
+	<div class="accordion-group">
+		<div class="accordion-heading">
+			<a href="#js-accordion-xml-format" class="accordion-toggle btn btn-inverse" data-toggle="collapse" data-parent="#js-accordion-jsutils">
+				<i class="icon-file icon-white"></i> XML Util
+			</a>
+		</div>
+		<div id="js-accordion-xml-format" class="accordion-body collapse">
+			<div class="accordion-inner">
+				<form id="xml-format-form" action="" method="POST">
+				<textarea name="xml_data" id="xml-input" rows="10" class="span6" onfocus="this.select()"></textarea>
+				<div class="control-group">
+					<button id="xml-format-exec" class="btn" data-action-uri="?action=ajax_xml_format">XML Format</button>
+					<button id="xml-json-exec" class="btn" data-action-uri="?action=ajax_xml_json">toJSON</button>
+				</div>
+				<textarea id="xml-result" rows="10" class="span6" readonly onfocus="this.select()"></textarea>
+				</form>
+			</div>
+		</div>
+<script>
+!function($) {
+	$('#xml-format-exec,#xml-json-exec').on('click', function() {
+		var $form = $('#xml-format-form');
+		$.post($(this).data('action-uri'), $form.serialize()).done(function(res) {
+			$('#xml-result').text(res);
+		});
+		return false;
+	});
+
+}(jQuery);
+</script>
+	</div>
 <!--
 	<div class="accordion-group">
 		<div class="accordion-heading">
