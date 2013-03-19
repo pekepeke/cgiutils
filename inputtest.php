@@ -6,7 +6,12 @@ if (!function_exists('h')) {
 	}
 }
 function p($s) {
-	var_export($s);
+	echo nl2br(str_replace(' ', "&nbsp;", h(var_export($s, true))));
+	// echo nl2br(h(var_export($s, true)));
+}
+
+function ifempty($v, $s) {
+	if (empty($v)) echo $s;
 }
 
 ?>
@@ -23,6 +28,7 @@ function p($s) {
 	<![endif]-->
 	<style type="text/css">
 		.contents { padding : 60px; }
+		td { word-break: break-all; word-wrap: break-word; }
 	</style>
 </head>
 <body>
@@ -35,7 +41,7 @@ function p($s) {
 	</div>
 	<div class="container contents">
 		<h4 class="var-dump">Test Form <button class="btn btn-mini btn-success">Show/Hide</button></h4>
-		<div>
+		<div style="display:none;">
 			<button class="btn btn-info" id="js-method-toggle">Change Method "GET"</button>
 			<form action="" method="POST" enctype="multipart/form-data">
 				<fieldset>
@@ -80,18 +86,21 @@ function p($s) {
 			</form>
 
 		</div>
-<?php foreach(array(
+<?php
+$raw_post_input = file_get_contents('php://input');
+$raw_post_var = array();
+if ($raw_post_input) $raw_post_var['php://input'] = $raw_post_input;
+foreach(array(
 	'$_GET' => $_GET,
 	'$_POST' => $_POST,
-	'RAW_POST_INPUT' => array(
-		'php://input' => file_get_contents('php://input'),
-	),
+	'RAW_POST_INPUT' => $raw_post_var,
+	'$_FILES' => $_FILES,
 	'$_SESSION' => $_SESSION,
 	'$_COOKIE' => $_COOKIE,
 	'$_SERVER' => $_SERVER,
 ) as $name => $vars): ?>
 		<h4 class="var-dump"><?php echo h($name); ?> <button class="btn btn-mini btn-success">Show/Hide</button></h4>
-		<table class="table table-striped">
+		<table class="table table-striped" <?php ifempty($vars, 'style="display:none;"'); ?>>
 			<tr>
 				<th>Parameter</th>
 				<th>Value</th>
