@@ -577,6 +577,12 @@ __halt_compiler(); ?>
 					$(document).on('submit', 'form[data-pjax]', function(ev) {
 						$.pjax.submit(ev, '#pjax-content');
 					});
+					$('a[data-no-pjax]').on('click', function(e) {
+						location.href = $(this).attr('href');
+						// e.stopPropagation();
+						e.preventDefault();
+						return false;
+					});
 
 					//####################################################################
 					// change navbar state
@@ -625,6 +631,19 @@ __halt_compiler(); ?>
 							<li<?php if ($__action == "easing") echo ' class="active"'; ?>><a href="?action=easing">Easing</a></li>
 							<li<?php if ($__action == "geohash") echo ' class="active"'; ?>><a href="?action=geohash">GeoHash</a></li>
 
+							<li class="dropdown">
+									<a href="#" class="dropdown-toggle" data-toggle="dropdown">Other<b class="caret"></b></a>
+									<ul class="dropdown-menu">
+										<li><a href="inputtest.php" data-no-pjax="true">Input Test</a></li>
+										<li><a href="status.php" data-no-pjax="true">Status</a></li>
+<!--
+										<li class="divider"></li>
+										<li class="nav-header">Nav header</li>
+										<li><a href="#">Separated link</a></li>
+										<li><a href="#">One more separated link</a></li>
+-->
+									</ul>
+								</li>
 <!--
 							<li<?php if ($__action == "test") echo ' class="active"'; ?>><a href="?action=test">Test</a></li>
 							<li><a href="#about">About</a></li>

@@ -14,6 +14,8 @@ function ifempty($v, $s) {
 	if (empty($v)) echo $s;
 }
 
+// session_start();
+
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -95,7 +97,7 @@ foreach(array(
 	'$_POST' => $_POST,
 	'RAW_POST_INPUT' => $raw_post_var,
 	'$_FILES' => $_FILES,
-	'$_SESSION' => $_SESSION,
+	// '$_SESSION' => $_SESSION,
 	'$_COOKIE' => $_COOKIE,
 	'$_SERVER' => $_SERVER,
 ) as $name => $vars): ?>
@@ -105,12 +107,14 @@ foreach(array(
 				<th>Parameter</th>
 				<th>Value</th>
 			</tr>
+<?php if(is_array($vars)): ?>
 <?php		foreach ($vars as $key => $val): ?>
 			<tr>
 				<td><?php echo h($key); ?></td>
 				<td><?php p($val); ?></td>
 			</tr>
 <?php		endforeach; ?>
+<?php endif; ?>
 		</table>
 <?php endforeach; ?>
 	</div> <!-- /container -->
@@ -120,7 +124,7 @@ foreach(array(
 <script>
 jQuery(function($) {
 	$('.var-dump').on('click', function() {
-		console.log($(this).next())
+		// console.log($(this).next())
 		$(this).next().fadeToggle();
 		return false;
 	});
