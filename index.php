@@ -1,5 +1,11 @@
 <?php
 
+if (!defined('DS')) {
+	define('DS', DIRECTORY_SEPARATOR);
+}
+
+require_once dirname(__FILE__)."/lib/GeoHash.php";
+
 if (!function_exists('h')) {
 	function h($s) {
 		return is_array($s) ? array_map("h", $s) : htmlspecialchars($s, ENT_QUOTES);
@@ -192,6 +198,20 @@ function action_ajax_xml_format() {
 function action_ajax_xml_json() {
 	$xml = simplexml_load_string(params("xml_data"));
 	set('contents', json_encode($xml));
+}
+
+function action_geohash() {
+	$latlon = params("latlon");
+
+	$geohash = "";
+	if (!empty($latlon)) {
+		list($lat, $lon) = explode(",", $latlon);
+
+		$geo = new GeoHash();
+		$geohash = $geo->encode($lat, $lon);
+	}
+
+	set(compact('latlon', 'geohash'));
 }
 
 
@@ -603,6 +623,7 @@ __halt_compiler(); ?>
 							<li<?php if ($__action == "image_diff") echo ' class="active"'; ?>><a href="?action=image_diff">Image Diff</a></li>
 							<li<?php if ($__action == "jstools") echo ' class="active"'; ?>><a href="?action=jstools">JS Tools</a></li>
 							<li<?php if ($__action == "easing") echo ' class="active"'; ?>><a href="?action=easing">Easing</a></li>
+							<li<?php if ($__action == "geohash") echo ' class="active"'; ?>><a href="?action=geohash">GeoHash</a></li>
 
 <!--
 							<li<?php if ($__action == "test") echo ' class="active"'; ?>><a href="?action=test">Test</a></li>
@@ -864,4 +885,19 @@ __halt_compiler(); ?>
 		</div>
 	</div>
  -->
+</div>
+
+@@geohash
+
+<div>
+	<form action="?action=geohash" method="POST" data-pjax="true">
+		<p>
+			<label>lat, lon</label>
+			<input name="latlon" type="text" class="span6" value="<?php echo h($latlon) ?>">
+			<div class="control-group">
+				<input type="submit" value="Calc" class="btn">
+			</div>
+			<input type="text" class="span6" readonly onclick="this.select()" value="<?php echo h($geohash); ?>">
+		</p>
+	</form>
 </div>
