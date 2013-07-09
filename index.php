@@ -911,12 +911,111 @@ __halt_compiler(); ?>
 <div>
 	<form action="?action=geohash" method="POST" data-pjax="true">
 		<p>
-			<label>lat, lon</label>
-			<input name="latlon" type="text" class="span6" value="<?php echo h($latlon) ?>">
-			<div class="control-group">
-				<input type="submit" value="Calc" class="btn">
+			<label><span class="span2">Latitude, Longitude</span>
+				<input id="js-latlon" name="latlon" type="text" class="span6" onclick="this.select()" value="<?php echo h($latlon) ?>">
+			</label>
+			<div class="control-group" style="padding-left: 360px;">
+				<button id="js-calc-geohash" class="btn"><i class="icon-arrow-up"></i>Hash</button>
+				<button id="js-calc-latlon" class="btn"><i class="icon-arrow-down"></i>LatLon</button>
 			</div>
-			<input type="text" class="span6" readonly onclick="this.select()" value="<?php echo h($geohash); ?>">
+			<label><span class="span2">GeoHash</span>
+				<input id="js-geohash" type="text" class="span6" onclick="this.select()" value="<?php echo h($geohash); ?>">
+			</label>
+
+			<div class="control-group" style="padding-left: 360px;">
+				<button id="js-apply-latlon" class="btn"><i class="icon-arrow-up"></i>LatLon</button>
+				<button id="js-apply-map" class="btn"><i class="icon-arrow-down"></i>Apply map</button>
+			</div>
 		</p>
 	</form>
+
+	<div class="accordion-group">
+		<div class="accordion-heading">
+			<a href="#js-accordion-map" class="accordion-toggle btn btn-inverse" data-toggle="collapse" data-parent="#js-accordion-jsutils">
+				<i class="icon-align-justify icon-white"></i> Map
+			</a>
+		</div>
+		<div id="js-accordion-map" class="accordion-body collapse">
+			<div class="accordion-inner">
+				<div id="js-map" style="width:450px; height:450px;"></div>
+			</div>
+		</div>
+	</div>
+
 </div>
+<script type="text/javascript" src="//maps.google.com/maps/api/js?sensor=false"></script>
+<script type="text/javascript" src="js/geohash.js"></script>
+<script type="text/javascript">
+(function($){
+	function bootstrap() {
+		var $latlon = $('#js-latlon')
+			, $geohash = $('#js-geohash');
+		$('#js-calc-geohash').on('click', function() {
+			var values = $latlon.val().split(",")
+				, lat = values[0], lon = values[1];
+			var hash = geohash.encode(lat, lon);
+
+			$geohash.val(hash);
+
+			var hash = geohash.encode(lat, lon, 6);
+			var neighbors = geohash.neighbors(hash);
+			return false;
+		});
+		$('#js-calc-latlon').on('click', function() {
+			var hash = $geohash.val();
+			var latlon = geohash.decode(hash).join(",");
+			$latlon.val(latlon);
+			return false;
+		});
+		var opt = {
+			zoom: 10,
+			center: new google.maps.LatLng(35.65855154020919, 139.70120429992676),
+			mapTypeId: google.maps.MapTypeId.ROADMAP
+		};
+		var map = null
+			, latestLatLng = null
+			, latestPin = null;
+		var MapUtil = {
+			setPosition : function(latLng) {
+				if (map) {
+					latestLatLng = latLng;
+					map.panTo(latLng);
+					if (latestPin) {
+						latestPin.setMap(null);
+						latestPin = null;
+					}
+					latestPin = new google.maps.Marker({
+						position : latLng,
+						map : map
+					});
+				}
+			}
+		};
+		$('#js-accordion-map').on('shown', function() {
+			if (!map) {
+				map = new google.maps.Map($("#js-map").get(0), opt);
+				google.maps.event.addListener(map, 'center_changed', function(ev) {
+					MapUtil.setPosition(map.getCenter());
+				});
+			}
+		});
+		$('#js-apply-latlon').on('click', function() {
+			if (!latestLatLng) { return false; }
+			var latlng = [latestLatLng.lat(), latestLatLng.lng()];
+			$latlon.val(latlng);
+			return false;
+		});
+		$('#js-apply-map').on('click', function() {
+			var latlng = $latlon.val().split(",");
+			if (latlng.length >= 2 && map) {
+				var point = new google.maps.LatLng(latlng[0], latlng[1]);
+				MapUtil.setPosition(point);
+			}
+			return false;
+		});
+	}
+
+	bootstrap();
+}(jQuery));
+  </script>
+
