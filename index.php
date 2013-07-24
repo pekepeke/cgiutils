@@ -891,6 +891,70 @@ __halt_compiler(); ?>
 }(jQuery);
 </script>
 	</div>
+
+	<script src='http://jashkenas.github.com/coffee-script/extras/coffee-script.js'></script>
+	<link href='https://jumly.herokuapp.com/release/jumly.min.css' rel="stylesheet"/>
+	<!-- <script src='http://code.jquery.com/jquery-2.0.0.min.js'></script> -->
+	<script src='https://jumly.herokuapp.com/release/jumly.min.js'></script>
+	<div class="accordion-group">
+		<div class="accordion-heading">
+			<a href="#js-accordion-jumly" class="accordion-toggle btn btn-inverse" data-toggle="collapse" data-parent="#js-accordion-jsutils">
+				<i class="icon-align-justify icon-white"></i> Jumly
+			</a>
+		</div>
+		<div id="js-accordion-jumly" class="accordion-body collapse">
+			<div class="accordion-inner">
+				<div class="row">
+					<div class="span5">
+						<p>Try changing below. Available directives are @found,
+@message, @create, @reply, @alt, @loop, @ref and @note.
+In more detail, see <a href='http://jumly.herokuapp.com/reference.html'>the reference</a>.</p>
+			<textarea id="code" class="span5" rows="10">@found "You", ->
+	@message "Think", ->
+		@message "Write your idea", "JUMLY", ->
+			@create "Diagram"
+jumly.css "background-color":"#8CC84B"</textarea>
+					</div>
+					<div class="span6 tab-content" style="height: 400px;">
+						<div id="diagram_container"></div>
+						<div id="notification"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+<script>
+jQuery(function($) {
+	var compile, id;
+	function compile() {
+		var ex;
+		$('#code').removeClass("failed");
+		$("#notification").text("");
+		try {
+			window.JUMLY.eval($('#code'), {
+				into: $('#diagram_container')
+			});
+			return;
+		} catch (_error) {
+			ex = _error;
+			$('#code').addClass("failed");
+			return $("#notification").text(ex);
+		}
+	};
+	var load_fn = function() {
+		if (typeof JUMLY === 'undefined' || typeof CoffeeScript === 'undefined') {
+			return setTimeout(load_fn, 100);
+		}
+		compile();
+	};
+	setTimeout(load_fn, 100);
+	id = -1;
+	return $('#code').on("keyup", function(a, b, c) {
+		clearTimeout(id);
+		return id = setTimeout(compile, 500);
+	});
+});
+</script>
 <!--
 	<div class="accordion-group">
 		<div class="accordion-heading">
@@ -915,8 +979,8 @@ __halt_compiler(); ?>
 				<input id="js-latlon" name="latlon" type="text" class="span6" onclick="this.select()" value="<?php echo h($latlon) ?>">
 			</label>
 			<div class="control-group" style="padding-left: 360px;">
-				<button id="js-calc-geohash" class="btn"><i class="icon-arrow-up"></i>Hash</button>
-				<button id="js-calc-latlon" class="btn"><i class="icon-arrow-down"></i>LatLon</button>
+				<button id="js-calc-geohash" class="btn"><i class="icon-arrow-down"></i>Hash</button>
+				<button id="js-calc-latlon" class="btn"><i class="icon-arrow-up"></i>LatLon</button>
 			</div>
 			<label><span class="span2">GeoHash</span>
 				<input id="js-geohash" type="text" class="span6" onclick="this.select()" value="<?php echo h($geohash); ?>">
@@ -937,13 +1001,28 @@ __halt_compiler(); ?>
 		</div>
 		<div id="js-accordion-map" class="accordion-body collapse">
 			<div class="accordion-inner">
-				<div id="js-map" style="width:450px; height:450px;"></div>
+				<div id="js-map" style="width:450px; height:450px; float:left;"></div>
+				<div class="control-group">
+					<label>
+						<span class="span2">Latitute, Longitude</span>
+						<input id="js-latlon-info" type="text" class="span4" onclick="this.select()" readonly>
+					</label>
+					<div class="control-group">
+						<label>
+							<span class="span2">Geohash Length</span>
+							<input id="js-geohash-length" type="text" class="span2" value="5">
+							<button id="js-draw-geohash"class="btn">Draw</button>
+						</label>
+						<div class="span4" id="js-draw-result">
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
 
 </div>
-<script type="text/javascript" src="//maps.google.com/maps/api/js?sensor=false"></script>
+<script type="text/javascript" src="//maps.google.com/maps/api/js?libraries=geometry&sensor=false"></script>
 <script type="text/javascript" src="js/geohash.js"></script>
 <script type="text/javascript">
 (function($){
@@ -991,11 +1070,15 @@ __halt_compiler(); ?>
 				}
 			}
 		};
+		var $cur_latlon = $('#js-latlon-info');
 		$('#js-accordion-map').on('shown', function() {
 			if (!map) {
 				map = new google.maps.Map($("#js-map").get(0), opt);
 				google.maps.event.addListener(map, 'center_changed', function(ev) {
 					MapUtil.setPosition(map.getCenter());
+
+					var latlng = [latestLatLng.lat(), latestLatLng.lng()];
+					$cur_latlon.val(latlng);
 				});
 			}
 		});
@@ -1003,6 +1086,7 @@ __halt_compiler(); ?>
 			if (!latestLatLng) { return false; }
 			var latlng = [latestLatLng.lat(), latestLatLng.lng()];
 			$latlon.val(latlng);
+			$geohash.val('');
 			return false;
 		});
 		$('#js-apply-map').on('click', function() {
@@ -1013,9 +1097,71 @@ __halt_compiler(); ?>
 			}
 			return false;
 		});
+
+
+		var rects = [];
+
+		$('#js-draw-geohash').on('click', function() {
+			var len = parseInt($('#js-geohash-length').val(), 10);
+			var lat = latestLatLng.lat(), lng = latestLatLng.lng();
+
+			var hash = geohash.encode(lat, lng, 5);
+			var neighbors = geohash.neighbors(hash);
+
+			$.each(rects, function(i, r) { r.setMap(null); });
+
+			var boxes = $.map(neighbors.concat([hash]), function(i, hash) {
+				var box = geohash.bbox(hash);
+				// console.log(box);
+				var rect = new google.maps.Rectangle({
+					strokeColor: "#FF0000",
+					strokeOpacity: 0.8,
+					strokeWeight: 2,
+					fillColor: "#FF0000",
+					fillOpacity: 0.35,
+					map: map,
+					bounds: new google.maps.LatLngBounds(
+						new google.maps.LatLng(box.n, box.w),
+						new google.maps.LatLng(box.s, box.e))
+				});
+				rects.push(rect);
+				return box;
+			});
+
+			// TODO : use boxes
+			var box = geohash.bbox(hash);
+			var calcDistance = google.maps.geometry.spherical.computeDistanceBetween
+			, LatLng = google.maps.LatLng;
+
+			var xdistance = calcDistance(new LatLng(box.n, box.w), new LatLng(box.n, box.e))//geoHashBox.neighbors.topleft.corners.topleft.distanceFrom(geoHashBox.neighbors.topright.corners.topright);
+			var ydistance = calcDistance(new LatLng(box.n, box.w), new LatLng(box.s, box.e))//geoHashBox.neighbors.topleft.corners.topleft.distanceFrom(geoHashBox.neighbors.bottomleft.corners.bottomleft);
+			var searcharea = parseInt((xdistance/1000) * (ydistance/1000)*100)/100
+			, units = "m";
+			if (xdistance>2000) {
+				xdistance = parseInt(xdistance/10)/100;
+				ydistance = parseInt(ydistance/10)/100;
+				units = "km";
+			} else {
+				xdistance = parseInt(xdistance+0.5);
+				ydistance = parseInt(ydistance+0.5);
+				units = "m";
+			}
+			var s = ["LEFT(geohash, " + hash + ") IN ("
+					+ neighbors.concat([hash]).join(', ') + ')'
+				, (lat * 1000/1000) + ", " + (lng * 1000/1000)
+					+ " [w:" + xdistance + units + ", h:" + ydistance + units + "] (" + searcharea + "km2)"
+			].join("\n")
+
+			$('#js-draw-result').html(s.replace(/\n/, '<br>'));
+		});
 	}
 
-	bootstrap();
+	var id = setInterval(function() {
+		if (typeof google !== 'undefined') {
+			bootstrap();
+			clearInterval(id);
+		}
+	}, 100);
 }(jQuery));
   </script>
 
