@@ -287,6 +287,7 @@ __halt_compiler(); ?>
 		<script src="js/imagediff.min.js"></script>
 		<script src="js/resemble.js"></script>
 		<script src="js/vkbeautify.js"></script>
+		<script type="text/javascript" src="//maps.google.com/maps/api/js?libraries=geometry&sensor=false"></script>
 
 		<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
 		<!--[if lt IE 9]>
@@ -1022,7 +1023,6 @@ jQuery(function($) {
 	</div>
 
 </div>
-<script type="text/javascript" src="//maps.google.com/maps/api/js?libraries=geometry&sensor=false"></script>
 <script type="text/javascript" src="js/geohash.js"></script>
 <script type="text/javascript">
 (function($){
@@ -1102,15 +1102,15 @@ jQuery(function($) {
 		var rects = [];
 
 		$('#js-draw-geohash').on('click', function() {
-			var len = parseInt($('#js-geohash-length').val(), 10);
+			var hash_len = parseInt($('#js-geohash-length').val(), 10);
 			var lat = latestLatLng.lat(), lng = latestLatLng.lng();
 
-			var hash = geohash.encode(lat, lng, 5);
+			var hash = geohash.encode(lat, lng, hash_len);
 			var neighbors = geohash.neighbors(hash);
 
 			$.each(rects, function(i, r) { r.setMap(null); });
 
-			var boxes = $.map(neighbors.concat([hash]), function(i, hash) {
+			var boxes = $.map(neighbors.concat([hash]), function(hash, i) {
 				var box = geohash.bbox(hash);
 				// console.log(box);
 				var rect = new google.maps.Rectangle({
@@ -1157,7 +1157,8 @@ jQuery(function($) {
 	}
 
 	var id = setInterval(function() {
-		if (typeof google !== 'undefined') {
+		if (typeof google !== 'undefined'
+			 && typeof google.maps.LatLng !== 'undefined') {
 			bootstrap();
 			clearInterval(id);
 		}
