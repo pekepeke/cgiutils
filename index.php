@@ -188,7 +188,17 @@ function action_index() {
 function action_ajax_xml_format() {
 	$xml = simplexml_load_string(params("xml_data"));
 
+	if ($xml === false) {
+		header("HTTP/1.0 400 Bad Request");
+		set('contents', "xml parse error");
+		return;
+	}
 	$dom = dom_import_simplexml($xml)->ownerDocument;
+	if (is_null($xml)) {
+		header("HTTP/1.0 400 Bad Request");
+		set('contents', "xml parse error");
+		return;
+	}
 	$dom->preserveWhiteSpace = false;
 	$dom->loadXML(params("xml_data"));
 	$dom->formatOutput = true;
@@ -288,6 +298,7 @@ __halt_compiler(); ?>
 		<script src="js/resemble.js"></script>
 		<script src="js/vkbeautify.js"></script>
 		<script type="text/javascript" src="//maps.google.com/maps/api/js?libraries=geometry&sensor=false"></script>
+		<script src='http://jashkenas.github.com/coffee-script/extras/coffee-script.js'></script>
 
 		<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
 		<!--[if lt IE 9]>
@@ -885,6 +896,8 @@ __halt_compiler(); ?>
 		var $form = $('#xml-format-form');
 		$.post($(this).data('action-uri'), $form.serialize()).done(function(res) {
 			$('#xml-result').text(res);
+		}).fail(function(xhr, err, cause) {
+			$('#xml-result').text(cause + " : " + xhr.responseText);
 		});
 		return false;
 	});
@@ -893,7 +906,6 @@ __halt_compiler(); ?>
 </script>
 	</div>
 
-	<script src='http://jashkenas.github.com/coffee-script/extras/coffee-script.js'></script>
 	<link href='https://jumly.herokuapp.com/release/jumly.min.css' rel="stylesheet"/>
 	<!-- <script src='http://code.jquery.com/jquery-2.0.0.min.js'></script> -->
 	<script src='https://jumly.herokuapp.com/release/jumly.min.js'></script>
