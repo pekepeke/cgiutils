@@ -1244,6 +1244,84 @@ jumly.css "background-color":"#8CC84B"</textarea>
 			</div>
 		</div>
 	</div>
+	<div class="accordion-group">
+		<div class="accordion-heading">
+			<a href="#js-accordion-webkit2scss" class="accordion-toggle btn btn-inverse" data-toggle="collapse" data-parent="#js-accordion-jsutils">
+				<i class="icon-align-justify icon-white"></i> Webkit2Scss
+			</a>
+		</div>
+		<div id="js-accordion-webkit2scss" class="accordion-body collapse">
+			<div class="accordion-inner">
+			<textarea id="css_code" class="span5" rows="10"></textarea>
+			<div class="control-group">
+				<button id="webkit2scss-exec" class="btn">Convert</button>
+			</div>
+			<textarea id="scss_code" class="span5" rows="10" readonly></textarea>
+			<textarea id="scss_mixin_code" class="span5" rows="10" readonly>@import "compass/css3/transition"
+
+@mixin animation ($animations...) {
+  @include experimental(animation, $animations);
+}
+// Individual Animation Properties
+@mixin animation-name ($names...) {
+  @include experimental(animation-name, $names);
+}
+@mixin animation-duration ($times...) {
+  @include experimental(animation-duration, $times);
+}
+@mixin animation-timing-function ($motions...) {
+// ease | linear | ease-in | ease-out | ease-in-out
+  @include experimental(animation-timing-function, $motions);
+}
+@mixin animation-iteration-count ($values...) {
+// infinite | <number>
+  @include experimental(animation-iteration-count, $values);
+}
+@mixin animation-direction ($directions...) {
+// normal | alternate
+  @include experimental(animation-direction, $directions);
+}
+@mixin animation-play-state ($states...) {
+// running | paused
+  @include experimental(animation-play-state, $states);
+}
+@mixin animation-delay ($times...) {
+  @include experimental(animation-delay, $times);
+}
+@mixin animation-fill-mode ($modes...) {
+// none | forwards | backwards | both
+  @include prefixer(animation-fill-mode, $modes);
+}
+// keyframes mixin
+@mixin keyframes($name) {
+  @-webkit-keyframes #{$name} {
+    @content;
+  }
+  @-moz-keyframes #{$name} {
+    @content;
+  }
+  @-ms-keyframes #{$name} {
+    @content;
+  }
+  @-o-keyframes #{$name} {
+    @content;
+  }
+  @keyframes #{$name} {
+    @content;
+  }
+}</textarea>
+			</div>
+		</div>
+	</div>
+<script>
+	$('#webkit2scss-exec').click(function() {
+		var s = $('#css_code').val();
+		s = s.replace(/-webkit-([^\s:]+)\s*:([^;]+)\s*;/gm, "@include $1($2);")
+			.replace(/@-webkit-keyframes\s*([^{]+)\s*/gm, "@include keyframes($1) ");
+		$('#scss_code').val(s);
+		return false;
+	});
+</script>
 <script>
 jQuery(function($) {
 	var compile, id;
