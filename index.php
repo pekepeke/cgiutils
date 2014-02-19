@@ -1373,23 +1373,25 @@ jQuery(function($) {
 
 <div>
 	<form action="?action=geohash" method="POST" data-pjax="true">
-		<p>
+		<div>
 			<label><span class="span2">Latitude, Longitude</span>
 				<input id="js-latlon" name="latlon" type="text" class="span6" onclick="this.select()" value="<?php echo h($latlon) ?>">
 			</label>
-			<div class="control-group" style="padding-left: 360px;">
+			<div class="control-group" style="margin:0 auto;width: 200px">
 				<button id="js-calc-geohash" class="btn"><i class="icon-arrow-down"></i>Hash</button>
 				<button id="js-calc-latlon" class="btn"><i class="icon-arrow-up"></i>LatLon</button>
 			</div>
 			<label><span class="span2">GeoHash</span>
 				<input id="js-geohash" type="text" class="span6" onclick="this.select()" value="<?php echo h($geohash); ?>">
 			</label>
+		</div>
 
-			<div class="control-group" style="padding-left: 360px;">
+		<div>
+			<div class="control-group" style="margin:0 auto; width: 200px;">
 				<button id="js-apply-latlon" class="btn"><i class="icon-arrow-up"></i>LatLon</button>
 				<button id="js-apply-map" class="btn"><i class="icon-arrow-down"></i>Apply map</button>
 			</div>
-		</p>
+		</div>
 	</form>
 
 	<div class="accordion-group">
@@ -1398,10 +1400,23 @@ jQuery(function($) {
 				<i class="icon-align-justify icon-white"></i> Map
 			</a>
 		</div>
+		<style>
+			#js-map {
+				width:450px;
+				height:450px;
+				float:left;
+			}
+			@media screen and (max-width: 450px) {
+				#js-map {
+					width:320px;
+					height:320px;
+				}
+			}
+		</style>
 		<div id="js-accordion-map" class="accordion-body collapse">
 			<div class="accordion-inner">
-				<div id="js-map" style="width:450px; height:450px; float:left;"></div>
-				<div class="control-group">
+				<div id="js-map" style=""></div>
+				<div class="control-group span6">
 					<label>
 						<span class="span2">Latitute, Longitude</span>
 						<input id="js-latlon-info" type="text" class="span4" onclick="this.select()" readonly>
