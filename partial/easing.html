@@ -691,6 +691,37 @@
             <code>easing</code>キーにeasingの名前を指定するだけです。
           </p>
           <pre><code>div.animate({ top: '-=100px' }, 600, '<strong>easing名</strong>', function&#160;()&#160;{&#160;…&#160;})</code></pre>
+	  <h3>easing 関数の自作</h3>
+	  <p>
+	    引数は5つ. 基本は第一引数だけ見れば、だいたいのことができる。
+	    0 〜 1 の値が返却される。
+	    <dl>
+	      <dt>第一引数</dt><dd>アニメーションなどの進捗率を表していて0→1へ変化する</dd>
+	      <dt>第二引数</dt><dd>経過時間（ミリ秒）</dd>
+	      <dt>第三引数</dt><dd>0固定</dd>
+	      <dt>第四引数</dt><dd>1固定</dd>
+	      <dt>第五引数</dt><dd>アニメーション実行のトータル時間（ミリ秒）</dd>
+	    </dl>
+	  </p>
+	    <code><pre>
+jQuery.easing.myEasing = function(x, t, b, c, d) {
+  return x;
+}</pre></code>
+	  <h3>一般的な easing 関数</h3>
+	  <p>
+	    <ul>
+	      <li><a href="http://www.robertpenner.com/easing/">http://www.robertpenner.com/easing/</a></li>
+	      <li><a href="http://www.robertpenner.com/easing/penner_chapter7_tweening.pdf">http://www.robertpenner.com/easing/penner_chapter7_tweening.pdf</a></li>
+	    </ul>
+	  </p>
+	    <code><pre>
+// 0 =< t =< d のとき
+function(t, b, c, d) {};
+// t = 現在秒
+// b = 最初の値
+// c = 最終的に変化する値
+// d = 何秒かけて動くか
+</pre></code>
         </section>
         <section class="scss">
           <h3>SCSS</h3>
