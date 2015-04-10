@@ -1,5 +1,11 @@
 <?php
 
+if (!function_exists('h')) {
+	function h($s) {
+		return is_array($s) ? array_map("h", $s) : htmlspecialchars($s, ENT_QUOTES);
+	}
+}
+
 if (!function_exists('http_response_code')) {
 	function http_response_code($code = NULL) {
 
@@ -73,24 +79,7 @@ function run() {
 		sleep($sleep);
 	}
 	http_response_code($code);
-	echo <<<EOS
-<p>
-STATUS = $code<br>
-SLEEP = $sleep
-</p>
-
-<ul>
-<li><a href="index.php">Back to index</a></li>
-<li><a href="?sleep=5">Example sleep 5</a></li>
-<li><a href="?code=200">OK</a></li>
-<li><a href="?code=400">Bad Request</a></li>
-<li><a href="?code=403">Forbidden</a></li>
-<li><a href="?code=404">Not Found</a></li>
-<li><a href="?code=500">Internal Server Error</a></li>
-<li><a href="?code=503">Service Unavailable</a></li>
-</ul>
-EOS
-	;
+	include(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "views", "status.php")));
 }
 
 run();
