@@ -45,6 +45,8 @@
 			<li><a href="index.php"><i class="icon-home"></i> Back to index</a></li>
 			<li><a href="?sleep=5"><i class="icon-pause"></i> Example sleep 5</a></li>
 			<li><a href="?code=200"><i class="icon-ok-sign"></i> OK</a></li>
+			<li><a href="?code=301"><i class="icon-ok-sign"></i> Moved Permanently</a></li>
+			<li><a href="?code=302"><i class="icon-ok-sign"></i> Moved Temporarily</a></li>
 			<li><a href="?code=400"><i class="icon-remove-sign"></i> Bad Request</a></li>
 			<li><a href="?code=403"><i class="icon-ban-circle"></i> Forbidden</a></li>
 			<li><a href="?code=404"><i class="icon-question-sign"></i> Not Found</a></li>

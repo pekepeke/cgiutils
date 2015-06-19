@@ -79,6 +79,10 @@ function run() {
 		sleep($sleep);
 	}
 	http_response_code($code);
+	if ($code >= 300 && $code < 400) {
+		header(sprintf('Location: %s://%s%s', $_SERVER["REQUEST_SCHEME"], $_SERVER["HTTP_HOST"], $_SERVER["SCRIPT_NAME"]));
+		return;
+	}
 	include(implode(DIRECTORY_SEPARATOR, array(dirname(__FILE__), "views", "status.php")));
 }
 
