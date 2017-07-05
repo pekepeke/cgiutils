@@ -3,6 +3,7 @@
 	<p class="lead">
 		Press Ctrl-V/Cmd-v, clipboard's image will display here.<br >
 		If you want to clear image, double-click the image.
+        <button id="btn-img-toggle" class="btn btn-primary">Expand</button>
 	</p>
 	<div class="row">
 		<div class="span6">

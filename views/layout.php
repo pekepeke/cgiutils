@@ -22,6 +22,9 @@
 				padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
 				padding-bottom: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
 			}
+            #img-base, #img-new {
+                max-height: 100px;
+            }
 		</style>
 		<link href="css/bootstrap-responsive.min.css" rel="stylesheet">
 
@@ -114,7 +117,15 @@
 						$(this)
 							.hide()
 							.data('src', '');
+					}).on('click', '#btn-img-toggle', function() {
+						var isBigState = $('#img-base').css('max-height').match(/100%/);
+						var size = isBigState ? "100px" : "100%";
+						$('#img-base').css('max-height', size);
+						$('#img-new').css('max-height', size);
+						$(this).text(isBigState ? "Expand" : "Shrink");
+						return false;
 					});
+
 					$(window).on('pasteCatcher', function(ev, img, src) {
 
 						var a = $('#img-base').get(0)
